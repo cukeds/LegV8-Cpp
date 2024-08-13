@@ -14,7 +14,7 @@ public:
     SignExtend();
     ~SignExtend();
 
-    static uint64_t sign_extend(uint32_t instruction, Format format);
+    uint64_t sign_extend(uint32_t instruction, Format format);
 };
 
 

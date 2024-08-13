@@ -6,6 +6,7 @@
 #define ARM_CONTROL_H
 
 #include "Signal.h"
+#include <utility>
 #include <vector>
 #include <cstdint>
 #include <iostream>
@@ -18,9 +19,11 @@ private:
     vector<Signal> signals;
 public:
 
-    Control(): signals(vector<Signal>()){};
+    Control(): signals(vector<Signal>()){
+        signals.reserve(32);
+    };
     void setControlSignals(vector<Signal> _signals) {
-        this->signals = _signals;
+        signals = std::move(_signals);
     }
     vector<Signal> getControlSignals() {
         return signals;
@@ -34,7 +37,7 @@ public:
     virtual void decode(uint16_t opcode, Opcode opcode2) = 0;
 
     ~Control(){
-        //std::cout << "Control destructor called" << "\n";
+        signals.clear();
     }
 
 };

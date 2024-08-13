@@ -3,7 +3,7 @@
 //
 
 #include "ProgramCounter.h"
-#include <iostream>
+//#include <iostream>
 ProgramCounter::ProgramCounter() {
     pc = 0;
 }
@@ -12,8 +12,8 @@ void ProgramCounter::increment() {
     pc += 4;
 }
 
-void ProgramCounter::setPC(int64_t pc) {
-    this->pc = pc;
+void ProgramCounter::setPC(int64_t _pc) {
+    this->pc = _pc;
 }
 
 int64_t ProgramCounter::getPC() const {
@@ -28,6 +28,4 @@ void ProgramCounter::print() const {
     //std::cout << "PC: " << pc << "\n";
 }
 
-ProgramCounter::~ProgramCounter() {
-    //std::cout << "ProgramCounter destructor called" << "\n";
-}
+ProgramCounter::~ProgramCounter() = default;

@@ -8,14 +8,16 @@
 
 class AluControl : public Control<vector<Signal>> {
 public:
+
     void decode(uint16_t opcode, vector<Signal> opcode2) override{
         if (opcode2.size() > 2){
             throw std::invalid_argument("Invalid opcode size");
         }
+
         // 00 ADD
         if (opcode2[0].getValue() == Signal::ZERO && opcode2[1].getValue() == Signal::ZERO){
             setControlSignals({
-                Signal("b3", Signal::ZERO),
+                Signal{"b3", Signal::ZERO},
                 Signal("b2", Signal::ZERO),
                 Signal("b1", Signal::ONE),
                 Signal("b0", Signal::ZERO)
@@ -24,7 +26,7 @@ public:
         // Pass B
         else if (opcode2[1].getValue() == Signal::ONE){
             setControlSignals({
-                Signal("b3", Signal::ZERO),
+                  Signal{"b3", Signal::ZERO},
                 Signal("b2", Signal::ONE),
                 Signal("b1", Signal::ONE),
                 Signal("b0", Signal::ONE)
@@ -39,7 +41,7 @@ public:
                 case 0x458:
                 case 0x558:
                     setControlSignals({
-                        Signal("b3", Signal::ZERO),
+                      Signal{"b3", Signal::ZERO},
                         Signal("b2", Signal::ZERO),
                         Signal("b1", Signal::ONE),
                         Signal("b0", Signal::ZERO)
@@ -49,7 +51,7 @@ public:
                 case 0x658:
                 case 0x758:
                     setControlSignals({
-                        Signal("b3", Signal::ZERO),
+                          Signal{"b3", Signal::ZERO},
                         Signal("b2", Signal::ONE),
                         Signal("b1", Signal::ONE),
                         Signal("b0", Signal::ZERO)
@@ -59,7 +61,7 @@ public:
                 case 0x450:
                 case 0x750:
                     setControlSignals({
-                        Signal("b3", Signal::ZERO),
+                      Signal{"b3", Signal::ZERO},
                         Signal("b2", Signal::ZERO),
                         Signal("b1", Signal::ZERO),
                         Signal("b0", Signal::ZERO)
@@ -68,7 +70,7 @@ public:
                 // ORR
                 case 0x550:
                     setControlSignals({
-                        Signal("b3", Signal::ZERO),
+                      Signal{"b3", Signal::ZERO},
                         Signal("b2", Signal::ZERO),
                         Signal("b1", Signal::ZERO),
                         Signal("b0", Signal::ONE)

@@ -54,11 +54,9 @@ void Processor::process() {
         return;
     }
 
-
     auto regBank = InstructionDecode();
 
-
-    branchAddress = (sign_extended_immediate << 2);
+    branchAddress = (int64_t) (sign_extended_immediate << 2);
 
     uint64_t rn = regBank[0];
     uint64_t rm = regBank[1];
@@ -119,7 +117,8 @@ bool Processor::InstructionFetch() {
 vector<uint64_t> Processor::InstructionDecode() {
 
     // Opcode = currentInstruction[31:21]
-    opcode = (currentInstruction >> 21) & 0x7FF;
+    opcode = (uint16_t) (currentInstruction >> 21) & 0x7FF;
+
     //std::cout << "Opcode: 0x" << std::hex << std::setw(8) << std::setfill('0') << opcode << std::dec << "\n";
     controlUnit.decode(opcode);
     controlSignals = controlUnit.getControlSignals();
@@ -144,8 +143,8 @@ vector<uint64_t> Processor::InstructionDecode() {
     //std::cout << "&Rn: " << std::hex << std::setw(2) << std::setfill('0') << (int) rn_address << std::dec << "\n";
     //std::cout << "&Rm: " << std::hex << std::setw(2) << std::setfill('0') << (int) rm_address << std::dec << "\n";
 
-    uint64_t rn = registers[rn_address];
-    uint64_t rm = registers[rm_address];
+    uint64_t rn = registers.getRegister(rn_address);
+    uint64_t rm = registers.getRegister(rm_address);
 
     //std::cout << "Rn: " << std::hex << std::setw(16) << std::setfill('0') << rn << std::dec << "\n";
     //std::cout << "Rm: " << std::hex << std::setw(16) << std::setfill('0') << rm << std::dec << "\n";
@@ -202,7 +201,7 @@ uint64_t Processor::MemoryAccess(uint64_t address, uint64_t writeData, int size)
         //std::cout<<"Writing to display"<<"\n";
         uint16_t pixel;
         uint16_t pixelMagic;
-        int temp_address = address;
+        int temp_address = (int) address;
         for(int i = 0; i<size/16; i++) {
             // 1234 1234 1234 1238
             pixel = (writeData >> (16 * i)) & 0xFFFF;
@@ -223,8 +222,9 @@ uint64_t Processor::MemoryAccess(uint64_t address, uint64_t writeData, int size)
                 return dataMemory.read16(address);
             case 32:
                 return dataMemory.read32(address);
+            default:
+                return dataMemory.read64(address);
         }
-        return dataMemory.read64(address);
     } else if (controlSignals[ControlUnit::ControlSignal::MemWrite].getValue()) {
         //std::cout << "Writing to memory" << "\n";
         switch(size){
@@ -237,9 +237,10 @@ uint64_t Processor::MemoryAccess(uint64_t address, uint64_t writeData, int size)
             case 32:
                 dataMemory.write32(address, writeData);
                 return dataMemory.read32(address);
+            default:
+                dataMemory.write64(address, writeData);
+                return dataMemory.read64(address);
         }
-        dataMemory.write64(address, writeData);
-        return dataMemory.read64(address);
     } else {
         return 0;
     }
@@ -304,7 +305,5 @@ Memory Processor::getDataMemory() {
     return dataMemory;
 }
 
-Processor::~Processor() {
-    //std::cout << "Processor destructor called" << "\n";
-}
+Processor::~Processor() = default;
 

@@ -47,8 +47,8 @@ private:
                   Signal("EnableFlags", Signal::ZERO)
                 });
                 format = Format::R;
-                break;
             }
+                break;
             case 0x750:
             case 0x558:
             case 0x758: {
@@ -68,9 +68,9 @@ private:
                   Signal("EnableFlags", Signal::ONE)
                   });
                 format = Format::R;
-                break;
             }
-            // I types
+                break;
+                // I types
             case 0x488:
             case 0x489:
             case 0x588:
@@ -173,9 +173,9 @@ private:
                   Signal("EnableFlags", Signal::ZERO)
                   });
                 format = Format::D;
-                break;
             }
-            // STURB
+                break;
+                // STURB
             case 0x1C0:{
                 setControlSignals({
                   Signal("Reg2Loc", Signal::ONE),
@@ -278,9 +278,9 @@ private:
                   Signal("EnableFlags", Signal::ONE)
                   });
                 format = Format::CB;
-                break;
             }
-            // CBNZ
+                break;
+                // CBNZ
             case 0x5A8:
             {
                 setControlSignals({
@@ -299,9 +299,9 @@ private:
                   Signal("EnableFlags", Signal::ONE)
                   });
                 format = Format::CB;
-                break;
             }
-            // IM types
+                break;
+                // IM types
             // MOVK
             case 0x794:
                 format = Format::IM;
@@ -326,6 +326,7 @@ private:
               Signal("ALUOp0", Signal::ZERO),
               Signal("EnableFlags", Signal::ZERO)
               });
+                format = Format::None;
         }
     }
 public:

@@ -5,12 +5,12 @@
 #ifndef ARM_TYPES_H
 #define ARM_TYPES_H
 enum class Format{
-    None,
-    R,
-    I,
-    D,
-    B,
-    CB,
-    IM
+    None = 0,
+    R = 1,
+    I = 2,
+    D = 3,
+    B = 4,
+    CB = 5,
+    IM = 6
 };
 #endif //ARM_TYPES_H

@@ -46,7 +46,7 @@ public:
     }
 
 
-    uint64_t read64(uint64_t address) const {
+    [[nodiscard]] uint64_t read64(uint64_t address) const {
         uint64_t value = 0;
         // big endian
         for(int i = 0; i < 8; i++) {
@@ -55,7 +55,7 @@ public:
         return value;
     }
 
-    uint32_t read32(uint64_t address) const {
+    [[nodiscard]] uint32_t read32(uint64_t address) const {
         // big endian
         uint32_t value = 0;
         for(int i = 0; i < 4; i++) {
@@ -64,7 +64,7 @@ public:
         return value;
     }
 
-    uint16_t read16(uint64_t address) const {
+    [[nodiscard]] uint16_t read16(uint64_t address) const {
         // big endian
         uint16_t value = 0;
         for(int i = 0; i < 2; i++) {
@@ -73,7 +73,7 @@ public:
         return value;
     }
 
-    uint8_t read8(uint64_t address) const {
+    [[nodiscard]] uint8_t read8(uint64_t address) const {
         return data[address];
     }
 
@@ -86,23 +86,23 @@ public:
 
     void print(bool instructions) const {
         //std::cout << std::hex;
-        int s = 16;
-        if (instructions) {
-            s = 8;
-        }
-        for (size_t i = 0; i < data.size(); i+=4) {
+//        int s = 16;
+//        if (instructions) {
+//            s = 8;
+//        }
+//        for (size_t i = 0; i < data.size(); i+=4) {
             //std::cout << "Address: 0x"  << std::setw(16) << std::setfill('0') << i;
-            uint64_t value = read64(i);
+//            uint64_t value = read64(i);
             //std::cout << " Value: 0x" << std::setw(s) << std::setfill('0') << value << "\n";
-        }
+//        }
         //std::cout << std::dec;
     }
 
     void print(uint64_t address, bool instructions) const {
-        int s = 16;
-        if (instructions) {
-            s = 8;
-        }
+//        int s = 16;
+//        if (instructions) {
+//            s = 8;
+//        }
         //std::cout << std::hex;
 
 

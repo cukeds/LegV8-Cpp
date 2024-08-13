@@ -15,6 +15,7 @@ uint64_t SignExtend::sign_extend(uint32_t instruction, Format format) {
     // Determine the instruction type, extract the immediate value, and sign extend it
     uint64_t sign_extended = 0;
     switch(format){
+        case Format::None:
         case Format::R:
             break;
         case Format::I:

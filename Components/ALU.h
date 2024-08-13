@@ -151,9 +151,7 @@ public:
         Overflow = 3
     };
 
-    ~ALU(){
-        //std::cout << "Execute destructor called" << "\n";
-    }
+    ~ALU()= default;
 };
 
 

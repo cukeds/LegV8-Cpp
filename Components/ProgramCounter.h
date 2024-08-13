@@ -14,7 +14,7 @@ private:
 public:
     ProgramCounter();
     void increment();
-    void setPC(int64_t pc);
+    void setPC(int64_t _pc);
     [[nodiscard]] int64_t getPC() const;
     void reset();
     void print() const;
