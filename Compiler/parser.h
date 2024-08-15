@@ -110,6 +110,7 @@ std::vector<std::string> tokenize(const std::string& line) {
 uint32_t getRegisterNumber(const std::string& reg) {
     // Convert register name to register number.
     // Example: "R0" -> 0, "R1" -> 1, etc.
+    if(reg.substr(1)=="ZR") return 31;
     return std::stoi(reg.substr(1));
 }
 

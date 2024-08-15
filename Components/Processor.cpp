@@ -40,7 +40,7 @@ void Processor::setup(vector<uint32_t> machineCode) {
     registers.setRegister(0x006, 0x0);  // Address
 
 
-    for(int i = 0; i < dataMemory.size()-1; i+=2){
+    for(int i = 0; i < display->width*display->height*PIXEL_SIZE; i+=2){
         dataMemory.write16(i, uint16_t(0x1bba));
 //        display->setPixel( (i/2)%display->width, (i/2)/display->height, (uint16_t)0x1bba);
     }
