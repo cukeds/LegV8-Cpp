@@ -24,6 +24,8 @@ public:
         for(int i = 0; i < 8; i++) {
             data[address + i] = (value >> (8 * (7 - i))) & 0xFF;
         }
+        //std::cout<<"Writing to address: 0x"<<std::hex<<address<<" value: 0x"<<value<<"\n";
+
     }
 
     void write32(uint64_t address, uint32_t value) {
@@ -86,23 +88,23 @@ public:
 
     void print(bool instructions) const {
         //std::cout << std::hex;
-//        int s = 16;
-//        if (instructions) {
-//            s = 8;
-//        }
-//        for (size_t i = 0; i < data.size(); i+=4) {
+        int s = 16;
+        if (instructions) {
+            s = 8;
+        }
+        for (size_t i = 0; i < data.size(); i+=4) {
             //std::cout << "Address: 0x"  << std::setw(16) << std::setfill('0') << i;
-//            uint64_t value = read64(i);
+            uint64_t value = read64(i);
             //std::cout << " Value: 0x" << std::setw(s) << std::setfill('0') << value << "\n";
-//        }
+        }
         //std::cout << std::dec;
     }
 
     void print(uint64_t address, bool instructions) const {
-//        int s = 16;
-//        if (instructions) {
-//            s = 8;
-//        }
+        int s = 16;
+        if (instructions) {
+            s = 8;
+        }
         //std::cout << std::hex;
 
 
@@ -115,6 +117,11 @@ public:
     [[nodiscard]] int size () const {
         return data.size();
     }
+
+    [[nodiscard]] vector<uint8_t> getData() {
+        return data;
+    }
+
     ~Memory() = default;
 };
 

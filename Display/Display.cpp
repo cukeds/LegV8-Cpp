@@ -31,8 +31,18 @@ std::vector<sf::Uint8> Display::convertRGB565ToRGBA(const uint16_t pixel) {
     return pixelsRGBA;
 }
 
+std::vector<sf::Uint8> Display::convertRGB565ToRGBA(const std::vector<sf::Uint16>& _pixels) {
+    std::vector<sf::Uint8> pixelsRGBA;
+    for (auto& pixel : _pixels) {
+        std::vector<sf::Uint8> pixelRGBA = convertRGB565ToRGBA(pixel);
+        pixelsRGBA.insert(pixelsRGBA.end(), pixelRGBA.begin(), pixelRGBA.end());
+    }
+    return pixelsRGBA;
+}
+
 
 void Display::render() {
+    texture.update(convertRGB565ToRGBA(pixels).data());
     window.clear();
     window.draw(sprite);
     window.display();
@@ -49,5 +59,10 @@ void Display::setPixel(int x, int y, uint16_t color) {
     std::vector<sf::Uint8> pixelRGBA = convertRGB565ToRGBA(color);
 
     // Update the texture with the converted pixel data
-    texture.update(pixelRGBA.data(), 1, 1, x, y);
+//    pixels.push_back({x, y, pixelRGBA});
+
+}
+
+void Display::setPixels(const std::vector<sf::Uint16> &_pixels) {
+    pixels = _pixels;
 }

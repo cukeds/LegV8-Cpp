@@ -4,6 +4,9 @@
 
 #ifndef ARM_TYPES_H
 #define ARM_TYPES_H
+
+#define PIXEL_SIZE 2
+
 enum class Format{
     None = 0,
     R = 1,

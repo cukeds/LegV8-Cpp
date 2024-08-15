@@ -1,0 +1,5 @@
+c:\windows\system32\wsl.exe --distribution Ubuntu --exec "/mnt/c/Program Files/JetBrains/CLion 2022.2.1/bin/ttyfix" /bin/bash -c "export CLION_IDE=TRUE && export CMAKE_COLOR_DIAGNOSTICS=ON && export JETBRAINS_IDE=TRUE && cd '/mnt/c/Users/Juan/Downloads/Cookie and Morts shit/University/Arq. De Computadoras/arm/cmake-build-wsl' && /usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G 'CodeBlocks - Unix Makefiles' -S '/mnt/c/Users/Juan/Downloads/Cookie and Morts shit/University/Arq. De Computadoras/arm' -B '/mnt/c/Users/Juan/Downloads/Cookie and Morts shit/University/Arq. De Computadoras/arm/cmake-build-wsl'"
+-- Found SFML .. in /usr/include
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /mnt/c/Users/Juan/Downloads/Cookie and Morts shit/University/Arq. De Computadoras/arm/cmake-build-wsl

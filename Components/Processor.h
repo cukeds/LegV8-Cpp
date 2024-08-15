@@ -13,6 +13,8 @@
 #include "ALU.h"
 #include "SignExtend.h"
 #include "../Display/Display.h"
+#include <unordered_map>
+
 
 class Processor {
 private:
@@ -31,7 +33,7 @@ private:
     uint16_t opcode;
     uint64_t sign_extended_immediate;
     vector<Signal> aluControlSignals;
-    vector<bool> aluFlags;
+    vector<Signal> opcode2;
     int64_t branchAddress;
 
     bool InstructionFetch();
@@ -46,8 +48,7 @@ public:
     void reset(bool resetMemory = false);
     void print();
     void setup(vector<uint32_t>);
-    Memory getDataMemory();
-
+    vector<uint8_t> getDataMemory();
     ~Processor();
 
 

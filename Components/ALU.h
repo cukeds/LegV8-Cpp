@@ -11,18 +11,28 @@
 using std::vector;
 using std::uint64_t;
 class ALU {
+public:
+    enum class FLAGS {
+        Negative = 0,
+        Zero = 1,
+        Carry = 2,
+        Overflow = 3
+    };
+
+    ALU(): result(0) {
+        flags = vector<bool>(4, false);
+    };
+
 private:
-    bool N;
-    bool Z;
-    bool C;
-    bool V;
+    vector<bool> flags;
     uint64_t result;
 
-    void setFlags(bool _N, bool _Z, bool _C, bool _V) {
-        N = _N;
-        Z = _Z;
-        C = _C;
-        V = _V;
+    void setFlags(bool N, bool Z, bool C, bool V) {
+        flags[(int)FLAGS::Negative] = N;
+        flags[(int)FLAGS::Zero] = Z;
+        flags[(int)FLAGS::Carry] = C;
+        flags[(int)FLAGS::Overflow] = V;
+
     }
 
     uint64_t add(uint64_t a, uint64_t b, bool enableFlags=false) {
@@ -117,7 +127,7 @@ private:
     }
 
 public:
-    ALU(): N(false), Z(false), C(false), V(false), result(0) {};
+
 
     uint64_t execute(uint64_t a, uint64_t b, uint8_t aluControl, bool enableFlags=false) {
         switch(aluControl) {
@@ -139,17 +149,10 @@ public:
 
     }
 
-
-    vector<bool> getflags(){
-        return {N, Z, C, V};
+    vector<bool>* getflags(){
+        return &flags;
     }
 
-    enum FLAGS {
-        Negative = 0,
-        Zero = 1,
-        Carry = 2,
-        Overflow = 3
-    };
 
     ~ALU()= default;
 };

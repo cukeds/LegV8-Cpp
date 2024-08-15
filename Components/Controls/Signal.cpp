@@ -17,3 +17,9 @@ Signal::Value Signal::getValue() const {
 void Signal::setValue(Value newValue) {
     value = newValue;
 }
+
+Signal& Signal::operator=(const Signal& signal) {
+    name = signal.name;
+    value = signal.value;
+    return *this;
+}

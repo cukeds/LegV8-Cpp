@@ -1,4 +1,4 @@
-STUR x5, [x6, #0]
+STURH x5, [x6, #0]
 ADD X6, X6, X3
 SUBS X7, X2, X6
 CBNZ X7, #-3

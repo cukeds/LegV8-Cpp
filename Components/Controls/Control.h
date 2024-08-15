@@ -15,7 +15,7 @@ using std::vector;
 
 template<typename Opcode>
 class Control {
-private:
+protected:
     vector<Signal> signals;
 public:
 
@@ -25,8 +25,13 @@ public:
     void setControlSignals(vector<Signal> _signals) {
         signals = std::move(_signals);
     }
-    vector<Signal> getControlSignals() {
-        return signals;
+    void setControlSignals(vector<Signal::Value> _signals) {
+        for (int i = 0; i < _signals.size(); i++) {
+            signals[i].setValue(_signals[i]);
+        }
+    }
+    vector<Signal>* getControlSignals() {
+        return &signals;
     }
     void print() {
         for (const auto& signal : signals) {
@@ -34,7 +39,7 @@ public:
         }
     }
 
-    virtual void decode(uint16_t opcode, Opcode opcode2) = 0;
+    virtual void decode(uint16_t*, Opcode*) = 0;
 
     ~Control(){
         signals.clear();

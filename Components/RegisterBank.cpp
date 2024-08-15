@@ -4,6 +4,7 @@
 
 #include "RegisterBank.h"
 #include <iostream>
+#include <iomanip>
 
 RegisterBank::RegisterBank() : registers(32, 0) {
 }
@@ -29,11 +30,11 @@ uint64_t RegisterBank::getRegister(uint8_t _register) {
 }
 
 void RegisterBank::print() {
-//    for(int i = 0; i < 32; i++) {
+    for(int i = 0; i < 32; i++) {
         //std::cout << "Register " << i << ": 0x";
         //std::cout << std::hex << std::setw(16) << std::setfill('0') << registers[i] << "\n";
         //std::cout << std::dec;
-//    }
+    }
 }
 
 void RegisterBank::print(uint8_t _register) {

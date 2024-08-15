@@ -1,0 +1,3 @@
+/mnt/c/Users/Juan/Downloads/Cookie and Morts shit/University/Arq. De Computadoras/arm/cmake-build-wsl/CMakeFiles/arm.dir
+/mnt/c/Users/Juan/Downloads/Cookie and Morts shit/University/Arq. De Computadoras/arm/cmake-build-wsl/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Juan/Downloads/Cookie and Morts shit/University/Arq. De Computadoras/arm/cmake-build-wsl/CMakeFiles/rebuild_cache.dir

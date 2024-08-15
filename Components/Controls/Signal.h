@@ -27,6 +27,10 @@ public:
         os << signal.name << ": " << signal.value;
         return os;
     }
+
+    Signal& operator=(const Signal& signal);
+
+
 };
 
 #endif //ARM_SIGNAL_H

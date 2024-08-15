@@ -3,7 +3,7 @@
 //
 
 #include "ProgramCounter.h"
-//#include <iostream>
+#include <iostream>
 ProgramCounter::ProgramCounter() {
     pc = 0;
 }
