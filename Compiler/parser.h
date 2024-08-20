@@ -134,7 +134,7 @@ uint32_t encodeRInstruction(std::vector<std::string>& tokens) {
     return instruction; // Cast to uint32_t for output.
 }
 
-uint32_t encodeDIstruction(std::vector<std::string>& tokens) {
+uint32_t encodeDInstruction(std::vector<std::string>& tokens) {
     DInstruction instr;
     for (auto& i : tokens) {
         i.erase(std::remove_if(i.begin(), i.end(), [](char c) {
@@ -194,6 +194,34 @@ uint32_t encodeCBInstruction(std::vector<std::string>& tokens) {
     return instruction;
 }
 
+uint32_t encodeIInstruction(std::vector<std::string>& tokens) {
+    IInstruction instr;
+    for (auto& i : tokens) {
+        i.erase(std::remove_if(i.begin(), i.end(), [](char c) {
+            return c == '[' || c == ']' || c == '#';
+        }), i.end());
+    }
+    instr.opcode = calculateOpcode(tokens[0]);
+    instr.Rt = getRegisterNumber(tokens[1]);
+    instr.Rn = getRegisterNumber(tokens[2]);
+    std::string number = tokens[3];
+    if(number[0] == '0' && number[1] == 'x') {
+        number.erase(0, 2);
+        instr.imm = std::stoi(number, nullptr, 16);
+    } else if(number[0] == '0' && number[1] == 'b') {
+        number.erase(0, 2);
+        instr.imm = std::stoi(number, nullptr, 2);
+    } else {
+        instr.imm = std::stoi(number);
+    }
+
+    uint32_t instruction = (instr.opcode << 22) |
+            (instr.imm << 10) |
+            (instr.Rn << 5) |
+            instr.Rt;
+    //std::cout<<std::hex<<std::setw(8)<<std::setfill('0')<<instruction<<"\n";
+    return instruction;
+}
 
 std::vector<uint32_t> compile(const std::vector<std::string>& assemblyLines, const std::string& outputFileName) {
 
@@ -205,10 +233,13 @@ std::vector<uint32_t> compile(const std::vector<std::string>& assemblyLines, con
             machineCode.push_back(encodeRInstruction(tokens));
         }
         else if (instructionSet.at(tokens[0]).format == InstructionFormat::D) {
-            machineCode.push_back(encodeDIstruction(tokens));
+            machineCode.push_back(encodeDInstruction(tokens));
         }
         else if(instructionSet.at(tokens[0]).format == InstructionFormat::CB) {
             machineCode.push_back(encodeCBInstruction(tokens));
+        }
+        else if(instructionSet.at(tokens[0]).format == InstructionFormat::I) {
+            machineCode.push_back(encodeIInstruction(tokens));
         }
         else {
             std::cerr << "Error: Unsupported instruction format!" << "\n";

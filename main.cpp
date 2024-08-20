@@ -100,6 +100,17 @@ int main(int argc, char* argv[]) {
         }
      }
 
+     if(argc <= 1){
+         std::cout<<"No arguments provided\n";
+         optimizeRendering = true;
+         assemblyCode = readAssemblyCode("assembly.s");
+         file = true;
+         if(assemblyCode.empty()){
+             std::cerr << "No assembly.s file provided\n";
+             return 1;
+         }
+     }
+
      if(!file){
         std::cerr << "No source file provided\n";
         return 1;

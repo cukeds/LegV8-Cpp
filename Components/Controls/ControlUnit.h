@@ -50,22 +50,22 @@ private:
             case 0x658:
             case 0x650:
             case 0x69a:
-            case 0x69b:{
+            case 0x69b: {
                 setControlSignals({
-                  Signal::ZERO,     // Reg2Loc
-                  Signal::ZERO,     // ALUSrc
-                    Signal::ZERO,   // MemtoReg
-                    Signal::ONE,    // RegWrite
-                    Signal::ZERO,   // MemRead
-                    Signal::ZERO,   // MemWrite
-                    Signal::X,      // MemAccess1
-                    Signal::X,      // MemAccess0
-                    Signal::ZERO,   // BranchCondition1
-                    Signal::ZERO,   // BranchCondition0
-                    Signal::ONE,    // ALUOp1
-                    Signal::ZERO,   // ALUOp0
-                    Signal::ZERO    // EnableFlags
-                });
+                                          Signal::ZERO,     // Reg2Loc
+                                          Signal::ZERO,     // ALUSrc
+                                          Signal::ZERO,   // MemtoReg
+                                          Signal::ONE,    // RegWrite
+                                          Signal::ZERO,   // MemRead
+                                          Signal::ZERO,   // MemWrite
+                                          Signal::X,      // MemAccess1
+                                          Signal::X,      // MemAccess0
+                                          Signal::ZERO,   // BranchCondition1
+                                          Signal::ZERO,   // BranchCondition0
+                                          Signal::ONE,    // ALUOp1
+                                          Signal::ZERO,   // ALUOp0
+                                          Signal::ZERO    // EnableFlags
+                                  });
 
                 format = Format::R;
             }
@@ -74,19 +74,19 @@ private:
             case 0x558:
             case 0x758: {
                 setControlSignals({
-                          Signal::ZERO,         // Reg2Loc
-                          Signal::ZERO,         // ALUSrc
-                          Signal::ZERO,         // MemtoReg
-                          Signal::ONE,          // RegWrite
-                          Signal::ZERO,         // MemRead
-                          Signal::ZERO,         // MemWrite
-                          Signal::X,            // MemAccess1
-                          Signal::X,            // MemAccess0
-                          Signal::ZERO,         // BranchCondition1
-                          Signal::ZERO,         // BranchCondition0
-                          Signal::ONE,          // ALUOp1
-                          Signal::ZERO,         // ALUOp0
-                          Signal::ONE           // EnableFlags
+                                          Signal::ZERO,         // Reg2Loc
+                                          Signal::ZERO,         // ALUSrc
+                                          Signal::ZERO,         // MemtoReg
+                                          Signal::ONE,          // RegWrite
+                                          Signal::ZERO,         // MemRead
+                                          Signal::ZERO,         // MemWrite
+                                          Signal::X,            // MemAccess1
+                                          Signal::X,            // MemAccess0
+                                          Signal::ZERO,         // BranchCondition1
+                                          Signal::ZERO,         // BranchCondition0
+                                          Signal::ONE,          // ALUOp1
+                                          Signal::ZERO,         // ALUOp0
+                                          Signal::ONE           // EnableFlags
                                   });
                 format = Format::R;
             }
@@ -94,23 +94,61 @@ private:
                 // I types
             case 0x488:
             case 0x489:
-            case 0x588:
-            case 0x589:
             case 0x490:
             case 0x491:
-            case 0x790:
-            case 0x791:
-            case 0x690:
-            case 0x691:
             case 0x590:
             case 0x591:
             case 0x688:
-            case 0x689:
-            case 0x788:
-            case 0x789:
-                // TODO
+            case 0x689: {
+                setControlSignals({
+                                          Signal::X,            // Reg2Loc
+                                          Signal::ONE,          // ALUSrc
+                                          Signal::X,            // MemtoReg
+                                          Signal::ONE,          // RegWrite
+                                          Signal::ZERO,         // MemRead
+                                          Signal::ZERO,         // MemWrite
+                                          Signal::X,            // MemAccess1
+                                          Signal::X,            // MemAccess0
+                                          Signal::ZERO,         // BranchCondition1
+                                          Signal::ZERO,         // BranchCondition0
+                                          Signal::ONE,          // ALUOp1
+                                          Signal::ZERO,         // ALUOp0
+                                          Signal::ZERO          // EnableFlags
+                                  });
                 format = Format::I;
+            }
                 break;
+            case 0x588:// flags
+            case 0x589:// flags
+            case 0x790:// flags
+            case 0x791:// flags
+            case 0x788:// flags
+            case 0x789:// flags
+            {
+                setControlSignals({
+                                          Signal::X,            // Reg2Loc
+                                          Signal::ONE,          // ALUSrc
+                                          Signal::X,            // MemtoReg
+                                          Signal::ONE,          // RegWrite
+                                          Signal::ZERO,         // MemRead
+                                          Signal::ZERO,         // MemWrite
+                                          Signal::X,            // MemAccess1
+                                          Signal::X,            // MemAccess0
+                                          Signal::ZERO,         // BranchCondition1
+                                          Signal::ZERO,         // BranchCondition0
+                                          Signal::ONE,          // ALUOp1
+                                          Signal::ZERO,         // ALUOp0
+                                          Signal::ONE          // EnableFlags
+                                  });
+                format = Format::I;
+            }
+                break;
+            case 0x690:
+            case 0x691:
+            {
+                format = Format::None;
+                break;
+            }
             // D types
             // LDUR
             case 0x7C2:

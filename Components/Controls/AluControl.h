@@ -50,6 +50,10 @@ public:
                 // ADD
                 case 0x458:
                 case 0x558:
+                case 0x488:
+                case 0x489:
+                case 0x588:
+                case 0x589:
                     controlSignals[0] = Signal::ZERO;
                     controlSignals[1] = Signal::ZERO;
                     controlSignals[2] = Signal::ONE;
@@ -59,6 +63,10 @@ public:
                 // SUB
                 case 0x658:
                 case 0x758:
+                case 0x688:
+                case 0x689:
+                case 0x788:
+                case 0x789:
                     controlSignals[0] = Signal::ZERO;
                     controlSignals[1] = Signal::ONE;
                     controlSignals[2] = Signal::ONE;
@@ -68,6 +76,10 @@ public:
                 //  AND
                 case 0x450:
                 case 0x750:
+                case 0x490:
+                case 0x491:
+                case 0x790:
+                case 0x791:
                     controlSignals[0] = Signal::ZERO;
                     controlSignals[1] = Signal::ZERO;
                     controlSignals[2] = Signal::ZERO;
@@ -76,6 +88,8 @@ public:
                     break;
                 // ORR
                 case 0x550:
+                case 0x590:
+                case 0x591:
                     controlSignals[0] = Signal::ZERO;
                     controlSignals[1] = Signal::ZERO;
                     controlSignals[2] = Signal::ZERO;
