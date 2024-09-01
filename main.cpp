@@ -29,7 +29,7 @@ std::vector<uint16_t> getDisplayMemory(std::vector<uint8_t> data) {
     return displayMemory;
 }
 
-std::vector<std::string> readAssemblyCode(std::string filename) {
+std::vector<std::string> readAssemblyCode(const std::string& filename) {
     std::unordered_map<std::string, int> labels;
     auto legv8Code = std::fstream(filename, std::ios::in);
     std::string line;
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
     int memory_size = 1024;
     bool running = true;
     int i = 0;
-    int j = 0;
+    int j;
     bool file = false;
     vector<std::string> assemblyCode;
     // read args
@@ -84,8 +84,9 @@ int main(int argc, char* argv[]) {
     // 3. -o for optimization
     // 4. -s for source file
     // 5. -m for memory size
+    // 6. -h for help
 
-     for(j = 1; j < argc; j++){
+     for(j = 0; j < argc; j++){
         if(strcmp(argv[j], "-d") == 0){
             debug = true;
         }else if(strcmp(argv[j], "-w") == 0){
@@ -97,23 +98,30 @@ int main(int argc, char* argv[]) {
             assemblyCode = readAssemblyCode(argv[j+1]);
         }else if(strcmp(argv[j], "-m") == 0){
             memory_size = atoi(argv[j+1]);
+        }else if(strcmp(argv[j], "-h") == 0){
+            std::cout<<"Usage: ./main [-d] [-w display_width] [-o] [-s source_file] [-m memory_size] [-h]\n";
+            std::cout<<"-d: Debug mode\n";
+            std::cout<<"-w: Set display width\n";
+            std::cout<<"-o: Optimize rendering\n";
+            std::cout<<"-s: Source file\n";
+            std::cout<<"-m: Memory size\n";
+            std::cout<<"-h: Help\n";
+
+            return 0;
         }
      }
 
      if(argc <= 1){
          std::cout<<"No arguments provided\n";
          optimizeRendering = true;
-         assemblyCode = readAssemblyCode("assembly.s");
-         file = true;
-         if(assemblyCode.empty()){
-             std::cerr << "No assembly.s file provided\n";
-             return 1;
-         }
      }
 
      if(!file){
-        std::cerr << "No source file provided\n";
-        return 1;
+        assemblyCode = readAssemblyCode("../assembly.s");
+        if(assemblyCode.empty()){
+         std::cerr << "No assembly.s file provided\n";
+         return 1;
+        }
      }
 
 
@@ -126,7 +134,7 @@ int main(int argc, char* argv[]) {
 
     // set null
 
-    if(!debug) std::cout.rdbuf(NULL);
+    if(!debug) std::cout.rdbuf(nullptr);
 
 
     Processor processor((display.height * display.width * PIXEL_SIZE) + memory_size, (int) machineCode.size()*4, &display);
@@ -136,13 +144,12 @@ int main(int argc, char* argv[]) {
 
     sf::Event event;
 
-
     while (running) {
         // Process the processor logic here
 
         processor.process();
 
-        if(i++ >= display.height*display.width * 4 && optimizeRendering){
+        if(i++ >= 100000 && optimizeRendering){
             auto data = processor.getDataMemory();
             display.setPixels(getDisplayMemory(data));
             display.render();
@@ -158,7 +165,6 @@ int main(int argc, char* argv[]) {
             display.render();
             i = 0;
         }
-
 
     }
     return 0;
