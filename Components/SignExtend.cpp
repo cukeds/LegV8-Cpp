@@ -10,7 +10,7 @@ SignExtend::SignExtend() = default;
 
 SignExtend::~SignExtend() = default;
 
-uint64_t SignExtend::sign_extend(uint32_t instruction, Format format) {
+uint64_t SignExtend::sign_extend(const uint32_t& instruction, const Format& format) {
     // Sign extend the instruction
     // Determine the instruction type, extract the immediate value, and sign extend it
     uint64_t sign_extended = 0;

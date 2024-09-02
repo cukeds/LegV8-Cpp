@@ -13,25 +13,21 @@
 
 using std::vector;
 
-template<typename Opcode>
+template<typename Opcode, typename Signals>
 class Control {
 protected:
-    vector<Signal> signals;
+    Signals signals;
 public:
 
-    Control(): signals(vector<Signal>()){
-        signals.reserve(32);
+    Control(): signals(){
     };
-    void setControlSignals(vector<Signal> _signals) {
+
+    void setControlSignals(const Signals& _signals) {
         signals = std::move(_signals);
     }
-    void setControlSignals(vector<Signal::Value> _signals) {
-        for (int i = 0; i < _signals.size(); i++) {
-            signals[i].setValue(_signals[i]);
-        }
-    }
-    vector<Signal>* getControlSignals() {
-        return &signals;
+
+    [[nodiscard]] const Signals& getControlSignals() {
+        return signals;
     }
     void print() {
         for (const auto& signal : signals) {
@@ -39,10 +35,9 @@ public:
         }
     }
 
-    virtual void decode(uint16_t*, Opcode*) = 0;
+    virtual void decode(uint16_t&, Opcode&) = 0;
 
     ~Control(){
-        signals.clear();
     }
 
 };

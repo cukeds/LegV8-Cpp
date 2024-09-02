@@ -118,7 +118,7 @@ public:
         return data.size();
     }
 
-    [[nodiscard]] vector<uint8_t> getData() {
+    [[nodiscard]] const vector<uint8_t>& getData() {
         return data;
     }
 

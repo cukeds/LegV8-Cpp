@@ -7,6 +7,8 @@ Display::Display(int width, int height)
         std::cerr << "Failed to create texture!" << "\n";
     }
     sprite.setTexture(texture);
+    window.setVerticalSyncEnabled(true);
+    window.setFramerateLimit(60);
 }
 
 std::vector<sf::Uint8> Display::convertRGB565ToRGBA(const uint16_t pixel) {
@@ -63,6 +65,9 @@ void Display::setPixel(int x, int y, uint16_t color) {
 
 }
 
-void Display::setPixels(const std::vector<sf::Uint16> &_pixels) {
-    pixels = _pixels;
+void Display::setPixels(const std::vector<sf::Uint8> &_pixels) {
+    pixels.clear();
+    for(int i = 0; i < _pixels.size(); i+=2){
+        pixels.emplace_back((_pixels[i] << 8) | _pixels[i+1]);
+    }
 }

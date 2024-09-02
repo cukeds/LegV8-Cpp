@@ -9,7 +9,7 @@
 
 Processor::Processor(int dataMemorySize,
                      int instructionMemorySize,
-                     Display* display
+                     DisplaySize display
 ) :
         pc(),
         registers(),
@@ -18,13 +18,13 @@ Processor::Processor(int dataMemorySize,
         controlUnit(),
         aluControlUnit(),
         alu(),
-        signExtend() {
+        signExtend(),
+        display(display){
     currentInstruction = 0;
     opcode = 0;
-    opcode2 = vector<Signal>(2, Signal{"", Signal::ZERO});
+    opcode2 = vector<Signal>(2, Signal{Signal::ZERO});
     sign_extended_immediate = 0;
     branchAddress = 0;
-    this->display = display;
 }
 
 void Processor::setup(vector<uint32_t> machineCode) {
@@ -34,13 +34,13 @@ void Processor::setup(vector<uint32_t> machineCode) {
         instructionMemory.print(i*4, true);
     }
 
-    registers.setRegister(0x002, display->width*display->height*PIXEL_SIZE); // Matrix size
+    registers.setRegister(0x002, display.width*display.height*PIXEL_SIZE); // Matrix size
     registers.setRegister(0x003, 0x2); // 4
     registers.setRegister(0x005, 0x1148114811481148); // Color
     registers.setRegister(0x006, 0x0);  // Address
 
 
-    for(int i = 0; i < display->width*display->height*PIXEL_SIZE; i+=2){
+    for(int i = 0; i < display.width*display.height*PIXEL_SIZE; i+=2){
         dataMemory.write16(i, uint16_t(0x1bba));
 //        display->setPixel( (i/2)%display->width, (i/2)/display->height, (uint16_t)0x1bba);
     }
@@ -52,13 +52,13 @@ void Processor::process() {
         return;
     }
 
-    auto regBank = InstructionDecode();
+    InstructionDecode();
 
     branchAddress = (int64_t) (sign_extended_immediate << 2);
 
-    uint64_t rn = regBank[0];
-    uint64_t rm = regBank[1];
-    uint8_t rd_address = regBank[2];
+    uint64_t rn = decodedRegisters.Rn;
+    uint64_t rm = decodedRegisters.Rm;
+    uint8_t rd_address = decodedRegisters.Rd;
     uint64_t result;
 
     if(registers.getRegister(0x005) != 0x1148114811481148){
@@ -69,7 +69,7 @@ void Processor::process() {
         //std::cout<<"Color: 0x" << std::hex << std::setw(16) << std::setfill('0') << registers.getRegister(0x005) << std::dec << "\n";
         //std::cout<<"Color: 0x" << std::hex << std::setw(16) << std::setfill('0') << registers.getRegister(0x005) << std::dec << "\n";
     }
-    if ((*controlUnit.getControlSignals())[ControlUnit::ControlSignal::ALUSrc].getValue()) {
+    if (controlUnit.getControlSignals().ALUSrc.getValue()) {
         result = Execute(rn, sign_extended_immediate);
     } else {
         result = Execute(rn, rm);
@@ -77,17 +77,21 @@ void Processor::process() {
 
 
     uint64_t mem_access_result = 0;
-    if((*controlUnit.getControlSignals())[ControlUnit::ControlSignal::MemWrite].getValue() || (*controlUnit.getControlSignals())[ControlUnit::ControlSignal::MemRead].getValue())
+    if(controlUnit.getControlSignals().MemWrite.getValue() || controlUnit.getControlSignals().MemRead.getValue())
     {
-        if(!(*controlUnit.getControlSignals())[ControlUnit::ControlSignal::MemAccess0].getValue() && !(*controlUnit.getControlSignals())[ControlUnit::ControlSignal::MemAccess1].getValue()) {
+        //ldurb
+        if(!controlUnit.getControlSignals().MemAccess0.getValue() && !controlUnit.getControlSignals().MemAccess1.getValue()) {
             mem_access_result = MemoryAccess(result, rm, 8);
         }
-        else if((*controlUnit.getControlSignals())[ControlUnit::ControlSignal::MemAccess0].getValue() && !(*controlUnit.getControlSignals())[ControlUnit::ControlSignal::MemAccess1].getValue()) {
+        //ldurh
+        else if(controlUnit.getControlSignals().MemAccess0.getValue() && !controlUnit.getControlSignals().MemAccess1.getValue()) {
             mem_access_result = MemoryAccess(result, rm, 16);
         }
-        else if(!(*controlUnit.getControlSignals())[ControlUnit::ControlSignal::MemAccess0].getValue() && (*controlUnit.getControlSignals())[ControlUnit::ControlSignal::MemAccess1].getValue()) {
+        //ldurw
+        else if(!controlUnit.getControlSignals().MemAccess0.getValue() && controlUnit.getControlSignals().MemAccess1.getValue()) {
             mem_access_result = MemoryAccess(result, rm, 32);
         }
+        //ldur
         else{
             mem_access_result = MemoryAccess(result, rm);
         }
@@ -96,7 +100,7 @@ void Processor::process() {
 
     //std::cout<< "Mem Access Result: 0x" << std::hex << std::setw(16) << std::setfill('0') << mem_access_result << std::dec << "\n";
 
-    if ((*controlUnit.getControlSignals())[ControlUnit::ControlSignal::MemtoReg].getValue()) {
+    if (controlUnit.getControlSignals().MemtoReg.getValue()) {
         result = mem_access_result;
     }
 
@@ -120,13 +124,13 @@ bool Processor::InstructionFetch() {
     return currentInstruction != 0;
 }
 
-vector<uint64_t> Processor::InstructionDecode() {
+void Processor::InstructionDecode() {
 
     // Opcode = currentInstruction[31:21]
     opcode = (uint16_t) (currentInstruction >> 21) & 0x7FF;
 
     //std::cout << "Opcode: 0x" << std::hex << std::setw(8) << std::setfill('0') << opcode << std::dec << "\n";
-    controlUnit.decode(&opcode);
+    controlUnit.decode(opcode);
     
 //    controlUnit.print();
 
@@ -137,7 +141,7 @@ vector<uint64_t> Processor::InstructionDecode() {
     uint8_t rn_address = (currentInstruction >> 5) & 0x1F; // NOT USED IN CB FORMAT
     uint8_t rm_address;
 
-    if ((*controlUnit.getControlSignals())[ControlUnit::ControlSignal::Reg2Loc].getValue()) {
+    if (controlUnit.getControlSignals().Reg2Loc.getValue()) {
         rm_address = rd_address;
     } else {
         rm_address = (currentInstruction >> 16) & 0x1F; // ONLY R format
@@ -154,24 +158,28 @@ vector<uint64_t> Processor::InstructionDecode() {
 
     //std::cout << "Rn: " << std::hex << std::setw(16) << std::setfill('0') << rn << std::dec << "\n";
     //std::cout << "Rm: " << std::hex << std::setw(16) << std::setfill('0') << rm << std::dec << "\n";
-    return {rn, rm, rd_address};
+    decodedRegisters.Rn = rn;
+    decodedRegisters.Rm = rm;
+    decodedRegisters.Rd = rd_address;
 }
 
 
 uint64_t Processor::Execute(uint64_t rn, uint64_t rm) {
-    opcode2[0] = (*controlUnit.getControlSignals())[ControlUnit::ControlSignal::ALUOp1];
-    opcode2[1] = (*controlUnit.getControlSignals())[ControlUnit::ControlSignal::ALUOp0];
-    aluControlUnit.decode(&opcode, &opcode2);
-    // aluControlUnit.get(*controlUnit.getControlSignals()) is of the form {b3, b2, b1, b0}
+    opcode2[0] = controlUnit.getControlSignals().ALUOp1;
+    opcode2[1] = controlUnit.getControlSignals().ALUOp0;
+    aluControlUnit.decode(opcode, opcode2);
+    // aluControlUnit.getcontrolUnit.getControlSignals() is of the form {b3, b2, b1, b0}
 
 
     uint8_t aluControl = 0;
-    for (int i = 0; i < 4; i++) {
-        aluControl |= (*aluControlUnit.getControlSignals())[i].getValue() << (3 - i);
-    }
+    aluControl |= aluControlUnit.getControlSignals().b3.getValue() << 3;
+    aluControl |= aluControlUnit.getControlSignals().b2.getValue() << 2;
+    aluControl |= aluControlUnit.getControlSignals().b1.getValue() << 1;
+    aluControl |= aluControlUnit.getControlSignals().b0.getValue();
+
     std::bitset<4> aluControlBits(aluControl);
     //std::cout << "Alu Control: 0b" << aluControlBits << "\n";
-    auto result = alu.execute(rn, rm, aluControl, (*controlUnit.getControlSignals())[ControlUnit::ControlSignal::EnableFlags].getValue());
+    auto result = alu.execute(rn, rm, aluControl, controlUnit.getControlSignals().EnableFlags.getValue());
     //std::cout << "Alu Result: 0x" << std::hex << std::setw(16) << std::setfill('0') << result << std::dec << "\n";
 
     return result;
@@ -203,7 +211,7 @@ uint64_t Processor::MemoryAccess(uint64_t address, uint64_t writeData, int size)
 
 
     //std::cout << "Memory Access" << "\n";
-    if ((*controlUnit.getControlSignals())[ControlUnit::ControlSignal::MemRead].getValue()) {
+    if (controlUnit.getControlSignals().MemRead.getValue()) {
         //std::cout << "Reading from memory" << "\n";
         switch(size){
             case 8:
@@ -215,7 +223,7 @@ uint64_t Processor::MemoryAccess(uint64_t address, uint64_t writeData, int size)
             default:
                 return dataMemory.read64(address);
         }
-    } else if ((*controlUnit.getControlSignals())[ControlUnit::ControlSignal::MemWrite].getValue()) {
+    } else if (controlUnit.getControlSignals().MemWrite.getValue()) {
         //std::cout << "Writing to memory" << "\n";
         switch(size){
             case 8:
@@ -237,7 +245,7 @@ uint64_t Processor::MemoryAccess(uint64_t address, uint64_t writeData, int size)
 }
 
 void Processor::WriteBack(uint8_t reg, uint64_t data) {
-    if ((*controlUnit.getControlSignals())[ControlUnit::ControlSignal::RegWrite].getValue()) {
+    if (controlUnit.getControlSignals().RegWrite.getValue()) {
         registers.setRegister(reg, data);
     }
 
@@ -252,24 +260,21 @@ void Processor::WriteBack(uint8_t reg, uint64_t data) {
 
 bool Processor::checkBranch() {
     //std::cout<< "Checking branch" << "\n";
-    if ((*controlUnit.getControlSignals()).empty()) {
-        //std::cout<< "Control signals empty" << "\n";
-        return false;
-    }
+
     bool branch;
     // CBZ
-    branch = !(*controlUnit.getControlSignals())[ControlUnit::ControlSignal::BranchCondition1].getValue() && (*controlUnit.getControlSignals())[ControlUnit::ControlSignal::BranchCondition0].getValue();
+    branch = !controlUnit.getControlSignals().BranchCondition1.getValue() && controlUnit.getControlSignals().BranchCondition0.getValue();
     if (branch) {
         //std::cout<< "CBZ" << "\n";
         return (*alu.getflags())[(int)ALU::FLAGS::Zero];
     }
     // CBNZ
-    branch = (*controlUnit.getControlSignals())[ControlUnit::ControlSignal::BranchCondition1].getValue() && !(*controlUnit.getControlSignals())[ControlUnit::ControlSignal::BranchCondition0].getValue();
+    branch = controlUnit.getControlSignals().BranchCondition1.getValue() && !controlUnit.getControlSignals().BranchCondition0.getValue();
     if(branch){
         //std::cout<< "CBNZ" << "\n";
         return !(*alu.getflags())[(int)ALU::FLAGS::Zero];
     }
-    branch = (*controlUnit.getControlSignals())[ControlUnit::ControlSignal::BranchCondition1].getValue() && (*controlUnit.getControlSignals())[ControlUnit::ControlSignal::BranchCondition0].getValue();
+    branch = controlUnit.getControlSignals().BranchCondition1.getValue() && controlUnit.getControlSignals().BranchCondition0.getValue();
     // B
     if(branch){
         //std::cout<< "B" << "\n";
@@ -290,7 +295,7 @@ void Processor::print() {
     pc.print();
 }
 
-vector<uint8_t> Processor::getDataMemory() {
+const vector<uint8_t>& Processor::getDataMemory() {
 
     return dataMemory.getData();
 }

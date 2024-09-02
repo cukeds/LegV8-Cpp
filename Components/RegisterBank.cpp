@@ -3,8 +3,6 @@
 //
 
 #include "RegisterBank.h"
-#include <iostream>
-#include <iomanip>
 
 RegisterBank::RegisterBank() : registers(32, 0) {
 }
@@ -17,16 +15,6 @@ void RegisterBank::setRegister(uint8_t _register, uint64_t data) {
         return;
     }
     registers[_register] = data;
-}
-
-uint64_t RegisterBank::getRegister(uint8_t _register) {
-    if(_register > 31) {
-        throw std::invalid_argument("Invalid register number");
-    }
-    if(_register == 31){
-        return 0;
-    }
-    return registers[_register];
 }
 
 void RegisterBank::print() {

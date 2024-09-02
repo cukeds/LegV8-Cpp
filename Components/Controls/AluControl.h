@@ -6,45 +6,35 @@
 #define ARM_ALUCONTROL_H
 #include "Control.h"
 
-class AluControl : public Control<vector<Signal>> {
-private:
-    vector<Signal::Value> controlSignals;
+class AluControl : public Control<vector<Signal>, AluSignals> {
 public:
     AluControl() : Control() {
-        controlSignals = {
-            Signal::ZERO,   // b3
-            Signal::ZERO,   // b2
-            Signal::ZERO,   // b1
-            Signal::ZERO    // b0
-        };
-        setControlSignals(controlSignals);
+        
     }
-    void decode(uint16_t* opcode, vector<Signal>* opcode2) override{
-        if (opcode2->size() > 2){
+    void decode(uint16_t& opcode, vector<Signal>& opcode2) override{
+        if (opcode2.size() > 2){
             throw std::invalid_argument("Invalid opcode size");
         }
 
         // 00 ADD
-        if ((*opcode2)[0].getValue() == Signal::ZERO && (*opcode2)[1].getValue() == Signal::ZERO){
-            controlSignals[0] = Signal::ZERO;
-            controlSignals[1] = Signal::ZERO;
-            controlSignals[2] = Signal::ONE;
-            controlSignals[3] = Signal::ZERO;
-            setControlSignals(controlSignals);
-
+        if (opcode2[0].getValue() == Signal::ZERO && opcode2[1].getValue() == Signal::ZERO){
+            signals.b3 = Signal::ZERO;
+            signals.b2 = Signal::ZERO;
+            signals.b1 = Signal::ONE;
+            signals.b0 = Signal::ZERO;
         }
         // Pass B
-        else if ((*opcode2)[1].getValue() == Signal::ONE){
-            controlSignals[0] = Signal::ZERO;
-            controlSignals[1] = Signal::ONE;
-            controlSignals[2] = Signal::ONE;
-            controlSignals[3] = Signal::ONE;
-            setControlSignals(controlSignals);
+        else if (opcode2[1].getValue() == Signal::ONE){
+            signals.b3 = Signal::ZERO;
+            signals.b2 = Signal::ONE;
+            signals.b1 = Signal::ONE;
+            signals.b0 = Signal::ONE;
+            
 
             // depends on opcode
-        } else if ((*opcode2)[0].getValue() == Signal::ONE) {
+        } else if (opcode2[0].getValue() == Signal::ONE) {
             // we need bits 0-10
-            uint16_t bits = *opcode & 0x7FF;
+            uint16_t bits = opcode & 0x7FF;
             // R-types
             switch(bits){
                 // ADD
@@ -54,11 +44,11 @@ public:
                 case 0x489:
                 case 0x588:
                 case 0x589:
-                    controlSignals[0] = Signal::ZERO;
-                    controlSignals[1] = Signal::ZERO;
-                    controlSignals[2] = Signal::ONE;
-                    controlSignals[3] = Signal::ZERO;
-                    setControlSignals(controlSignals);
+                    signals.b3 = Signal::ZERO;
+                    signals.b2 = Signal::ZERO;
+                    signals.b1 = Signal::ONE;
+                    signals.b0 = Signal::ZERO;
+                    
                     break;
                 // SUB
                 case 0x658:
@@ -67,11 +57,11 @@ public:
                 case 0x689:
                 case 0x788:
                 case 0x789:
-                    controlSignals[0] = Signal::ZERO;
-                    controlSignals[1] = Signal::ONE;
-                    controlSignals[2] = Signal::ONE;
-                    controlSignals[3] = Signal::ZERO;
-                    setControlSignals(controlSignals);
+                    signals.b3 = Signal::ZERO;
+                    signals.b2 = Signal::ONE;
+                    signals.b1 = Signal::ONE;
+                    signals.b0 = Signal::ZERO;
+                    
                     break;
                 //  AND
                 case 0x450:
@@ -80,21 +70,21 @@ public:
                 case 0x491:
                 case 0x790:
                 case 0x791:
-                    controlSignals[0] = Signal::ZERO;
-                    controlSignals[1] = Signal::ZERO;
-                    controlSignals[2] = Signal::ZERO;
-                    controlSignals[3] = Signal::ZERO;
-                    setControlSignals(controlSignals);
+                    signals.b3 = Signal::ZERO;
+                    signals.b2 = Signal::ZERO;
+                    signals.b1 = Signal::ZERO;
+                    signals.b0 = Signal::ZERO;
+                    
                     break;
                 // ORR
                 case 0x550:
                 case 0x590:
                 case 0x591:
-                    controlSignals[0] = Signal::ZERO;
-                    controlSignals[1] = Signal::ZERO;
-                    controlSignals[2] = Signal::ZERO;
-                    controlSignals[3] = Signal::ONE;
-                    setControlSignals(controlSignals);
+                    signals.b3 = Signal::ZERO;
+                    signals.b2 = Signal::ZERO;
+                    signals.b1 = Signal::ZERO;
+                    signals.b0 = Signal::ONE;
+                    
                     break;
                 default:
                     std::cerr << "Invalid opcode" << "\n";

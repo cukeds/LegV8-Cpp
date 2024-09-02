@@ -14,7 +14,7 @@
 #include "SignExtend.h"
 #include "../Display/Display.h"
 #include <unordered_map>
-
+#include "Types.h"
 
 class Processor {
 private:
@@ -26,7 +26,7 @@ private:
     AluControl aluControlUnit;
     ALU alu;
     SignExtend signExtend;
-    Display* display;
+    DisplaySize display;
 
     vector<Signal> controlSignals;
     uint32_t currentInstruction;
@@ -35,20 +35,21 @@ private:
     vector<Signal> aluControlSignals;
     vector<Signal> opcode2;
     int64_t branchAddress;
+    DecodedRegisters decodedRegisters;
 
     bool InstructionFetch();
-    vector<uint64_t> InstructionDecode();
+    void InstructionDecode();
     uint64_t Execute(uint64_t, uint64_t);
     uint64_t MemoryAccess(uint64_t, uint64_t = 0, int size = 64);
     void WriteBack(uint8_t, uint64_t);
     bool checkBranch();
 public:
-    Processor(int, int, Display*);
+    Processor(int, int, DisplaySize);
     void process();
     void reset(bool resetMemory = false);
     void print();
     void setup(vector<uint32_t>);
-    vector<uint8_t> getDataMemory();
+    const vector<uint8_t>& getDataMemory();
     ~Processor();
 
 

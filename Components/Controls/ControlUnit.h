@@ -7,42 +7,25 @@
 #include "Control.h"
 #include "../Types.h"
 
-class ControlUnit : public Control<int>{
+class ControlUnit : public Control<uint16_t, ControlSignals>{
 
 public:
-    ControlUnit() : Control(){
-        format = Format::None;
-        signals = {
-            Signal("Reg2Loc", Signal::ZERO),
-            Signal("ALUSrc", Signal::ZERO),
-            Signal("MemtoReg", Signal::ZERO),
-            Signal("RegWrite", Signal::ZERO),
-            Signal("MemRead", Signal::ZERO),
-            Signal("MemWrite", Signal::ZERO),
-            Signal("MemAccess1", Signal::X),
-            Signal("MemAccess0",Signal::X),
-            Signal("BranchCondition1", Signal::ZERO),
-            Signal("BranchCondition0", Signal::ZERO),
-            Signal("ALUOp1", Signal::ZERO),
-            Signal("ALUOp0", Signal::ZERO),
-            Signal("EnableFlags", Signal::ZERO)
-        };
+    ControlUnit() : Control(), format(Format::None){
     }
 
 private:
     Format format;
+    void decode(uint16_t& opcode, uint16_t& opcode2) override{
+        // Decoding according to the opcode
+        if(opcode >= 0x0A0 && opcode <= 0x0BF) opcode = 0x0A0; //B
+        else if(opcode >= 0x4A0 && opcode <= 0x4BF) opcode = 0x4A0; // BL
+        else if(opcode >= 0x5A8 && opcode <= 0x5AF) opcode = 0x5A8; // CBNZ
+        else if(opcode >= 0x5A0 && opcode <= 0x5A7) opcode = 0x5A0; // CBZ
+        else if(opcode >= 0x2A0 && opcode <= 0x2A7) opcode = 0x2A0; // B.cond
+        else if(opcode >= 0x794 && opcode <= 0x797) opcode = 0x794; // MOVK
+        else if(opcode >= 0x694 && opcode <= 0x697) opcode = 0x694; // MOVZ
 
-    void decode(uint16_t* opcode, int* opcode2) override{
-        // Decoding according to the (*opcode)
-        if((*opcode) >= 0x0A0 && (*opcode) <= 0x0BF) (*opcode) = 0x0A0; //B
-        else if((*opcode) >= 0x4A0 && (*opcode) <= 0x4BF) (*opcode) = 0x4A0; // BL
-        else if((*opcode) >= 0x5A8 && (*opcode) <= 0x5AF) (*opcode) = 0x5A8; // CBNZ
-        else if((*opcode) >= 0x5A0 && (*opcode) <= 0x5A7) (*opcode) = 0x5A0; // CBZ
-        else if((*opcode) >= 0x2A0 && (*opcode) <= 0x2A7) (*opcode) = 0x2A0; // B.cond
-        else if((*opcode) >= 0x794 && (*opcode) <= 0x797) (*opcode) = 0x794; // MOVK
-        else if((*opcode) >= 0x694 && (*opcode) <= 0x697) (*opcode) = 0x694; // MOVZ
-
-        switch((*opcode)) {
+        switch(opcode) {
             // R types
             case 0x450:
             case 0x458:
@@ -51,21 +34,21 @@ private:
             case 0x650:
             case 0x69a:
             case 0x69b: {
-                setControlSignals({
-                                          Signal::ZERO,     // Reg2Loc
-                                          Signal::ZERO,     // ALUSrc
-                                          Signal::ZERO,   // MemtoReg
-                                          Signal::ONE,    // RegWrite
-                                          Signal::ZERO,   // MemRead
-                                          Signal::ZERO,   // MemWrite
-                                          Signal::X,      // MemAccess1
-                                          Signal::X,      // MemAccess0
-                                          Signal::ZERO,   // BranchCondition1
-                                          Signal::ZERO,   // BranchCondition0
-                                          Signal::ONE,    // ALUOp1
-                                          Signal::ZERO,   // ALUOp0
-                                          Signal::ZERO    // EnableFlags
-                                  });
+                signals.Reg2Loc =  Signal::ZERO;      // Reg2Loc
+                signals.ALUSrc =  Signal::ZERO;      // ALUSrc
+                signals.MemtoReg =  Signal::ZERO;      // MemtoReg
+                signals.RegWrite =  Signal::ONE;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::X;         // MemAccess1
+                signals.MemAccess0 =  Signal::X;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ONE;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ZERO;      // EnableFlags
+
+
 
                 format = Format::R;
             }
@@ -73,21 +56,20 @@ private:
             case 0x750:
             case 0x558:
             case 0x758: {
-                setControlSignals({
-                                          Signal::ZERO,         // Reg2Loc
-                                          Signal::ZERO,         // ALUSrc
-                                          Signal::ZERO,         // MemtoReg
-                                          Signal::ONE,          // RegWrite
-                                          Signal::ZERO,         // MemRead
-                                          Signal::ZERO,         // MemWrite
-                                          Signal::X,            // MemAccess1
-                                          Signal::X,            // MemAccess0
-                                          Signal::ZERO,         // BranchCondition1
-                                          Signal::ZERO,         // BranchCondition0
-                                          Signal::ONE,          // ALUOp1
-                                          Signal::ZERO,         // ALUOp0
-                                          Signal::ONE           // EnableFlags
-                                  });
+                signals.Reg2Loc =  Signal::ZERO;      // Reg2Loc
+                signals.ALUSrc =  Signal::ZERO;      // ALUSrc
+                signals.MemtoReg =  Signal::ZERO;      // MemtoReg
+                signals.RegWrite =  Signal::ONE;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::X;         // MemAccess1
+                signals.MemAccess0 =  Signal::X;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ONE;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ONE;       // EnableFlags
+
                 format = Format::R;
             }
                 break;
@@ -100,21 +82,20 @@ private:
             case 0x591:
             case 0x688:
             case 0x689: {
-                setControlSignals({
-                                          Signal::X,            // Reg2Loc
-                                          Signal::ONE,          // ALUSrc
-                                          Signal::X,            // MemtoReg
-                                          Signal::ONE,          // RegWrite
-                                          Signal::ZERO,         // MemRead
-                                          Signal::ZERO,         // MemWrite
-                                          Signal::X,            // MemAccess1
-                                          Signal::X,            // MemAccess0
-                                          Signal::ZERO,         // BranchCondition1
-                                          Signal::ZERO,         // BranchCondition0
-                                          Signal::ONE,          // ALUOp1
-                                          Signal::ZERO,         // ALUOp0
-                                          Signal::ZERO          // EnableFlags
-                                  });
+                signals.Reg2Loc =  Signal::X;      // Reg2Loc
+                signals.ALUSrc =  Signal::ONE;      // ALUSrc
+                signals.MemtoReg =  Signal::X;      // MemtoReg
+                signals.RegWrite =  Signal::ONE;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::X;         // MemAccess1
+                signals.MemAccess0 =  Signal::X;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ONE;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ZERO;       // EnableFlags
+
                 format = Format::I;
             }
                 break;
@@ -125,21 +106,21 @@ private:
             case 0x788:// flags
             case 0x789:// flags
             {
-                setControlSignals({
-                                          Signal::X,            // Reg2Loc
-                                          Signal::ONE,          // ALUSrc
-                                          Signal::X,            // MemtoReg
-                                          Signal::ONE,          // RegWrite
-                                          Signal::ZERO,         // MemRead
-                                          Signal::ZERO,         // MemWrite
-                                          Signal::X,            // MemAccess1
-                                          Signal::X,            // MemAccess0
-                                          Signal::ZERO,         // BranchCondition1
-                                          Signal::ZERO,         // BranchCondition0
-                                          Signal::ONE,          // ALUOp1
-                                          Signal::ZERO,         // ALUOp0
-                                          Signal::ONE          // EnableFlags
-                                  });
+                signals.Reg2Loc =  Signal::X;      // Reg2Loc
+                signals.ALUSrc =  Signal::ONE;      // ALUSrc
+                signals.MemtoReg =  Signal::X;      // MemtoReg
+                signals.RegWrite =  Signal::ONE;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::X;         // MemAccess1
+                signals.MemAccess0 =  Signal::X;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ONE;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ONE;       // EnableFlags
+
+
                 format = Format::I;
             }
                 break;
@@ -153,163 +134,163 @@ private:
             // LDUR
             case 0x7C2:
             {
-                setControlSignals({
-                      Signal::X,    // Reg2Loc
-                      Signal::ONE,  // ALUSrc
-                      Signal::ONE,  // MemtoReg
-                      Signal::ONE,  // RegWrite
-                      Signal::ONE,  // MemRead
-                      Signal::ZERO, // MemWrite
-                      Signal::ONE,  // MemAccess1
-                      Signal::ONE,  // MemAccess0
-                      Signal::ZERO, // BranchCondition1
-                      Signal::ZERO, // BranchCondition0
-                      Signal::ZERO, // ALUOp1
-                      Signal::ZERO, // ALUOp0
-                      Signal::ZERO  // EnableFlags
-                  });
+                signals.Reg2Loc =  Signal::X;      // Reg2Loc
+                signals.ALUSrc =  Signal::ONE;      // ALUSrc
+                signals.MemtoReg =  Signal::ONE;      // MemtoReg
+                signals.RegWrite =  Signal::ONE;       // RegWrite
+                signals.MemRead =  Signal::ONE;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::ONE;         // MemAccess1
+                signals.MemAccess0 =  Signal::ONE;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ZERO;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ZERO;       // EnableFlags
+
+
                 format = Format::D;
                 break;
             }
             // LDURB
             case 0x1C2:{
-                setControlSignals({
-                      Signal::X,    // Reg2Loc
-                      Signal::ONE,  // ALUSrc
-                      Signal::ONE,  // MemtoReg
-                      Signal::ONE,  // RegWrite
-                      Signal::ONE,  // MemRead
-                      Signal::ZERO, // MemWrite
-                      Signal::ZERO, // MemAccess1
-                      Signal::ONE,  // MemAccess0
-                      Signal::ZERO, // BranchCondition1
-                      Signal::ZERO, // BranchCondition0
-                      Signal::ZERO, // ALUOp1
-                      Signal::ZERO, // ALUOp0
-                      Signal::ZERO  // EnableFlags
-              });
+                signals.Reg2Loc =  Signal::X;      // Reg2Loc
+                signals.ALUSrc =  Signal::ONE;      // ALUSrc
+                signals.MemtoReg =  Signal::ONE;      // MemtoReg
+                signals.RegWrite =  Signal::ONE;       // RegWrite
+                signals.MemRead =  Signal::ONE;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::ZERO;         // MemAccess1
+                signals.MemAccess0 =  Signal::ZERO;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ZERO;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ZERO;       // EnableFlags
+
+
                 format = Format::D;
                 break;
             }
             // LDURH
             case 0x3C2:
             {
-                setControlSignals({
-                        Signal::X,    // Reg2Loc
-                        Signal::ONE,  // ALUSrc
-                        Signal::ONE,  // MemtoReg
-                        Signal::ONE,  // RegWrite
-                        Signal::ONE,  // MemRead
-                        Signal::ZERO, // MemWrite
-                        Signal::ZERO,  // MemAccess1
-                        Signal::ONE, // MemAccess0
-                        Signal::ZERO, // BranchCondition1
-                        Signal::ZERO, // BranchCondition0
-                        Signal::ZERO, // ALUOp1
-                        Signal::ZERO, // ALUOp0
-                        Signal::ZERO  // EnableFlags
-                  });
+                signals.Reg2Loc =  Signal::X;      // Reg2Loc
+                signals.ALUSrc =  Signal::ONE;      // ALUSrc
+                signals.MemtoReg =  Signal::ONE;      // MemtoReg
+                signals.RegWrite =  Signal::ONE;       // RegWrite
+                signals.MemRead =  Signal::ONE;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::ZERO;         // MemAccess1
+                signals.MemAccess0 =  Signal::ONE;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ZERO;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ZERO;       // EnableFlags
+
+
                 format = Format::D;
                 break;
             }
             // STUR
             case 0x7C0:
             {
-                setControlSignals({
-                          Signal::ONE,    // Reg2Loc
-                          Signal::ONE,  // ALUSrc
-                          Signal::X,  // MemtoReg
-                          Signal::ZERO,  // RegWrite
-                          Signal::ZERO,  // MemRead
-                          Signal::ONE, // MemWrite
-                          Signal::ONE,  // MemAccess1
-                          Signal::ONE, // MemAccess0
-                          Signal::ZERO, // BranchCondition1
-                          Signal::ZERO, // BranchCondition0
-                          Signal::ZERO, // ALUOp1
-                          Signal::ZERO, // ALUOp0
-                          Signal::ZERO  // EnableFlags
-                  });
+                signals.Reg2Loc =  Signal::ONE;      // Reg2Loc
+                signals.ALUSrc =  Signal::ONE;      // ALUSrc
+                signals.MemtoReg =  Signal::X;      // MemtoReg
+                signals.RegWrite =  Signal::ZERO;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ONE;      // MemWrite
+                signals.MemAccess1 =  Signal::ONE;         // MemAccess1
+                signals.MemAccess0 =  Signal::ONE;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ZERO;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ZERO;       // EnableFlags
+
+
                 format = Format::D;
             }
                 break;
                 // STURB
             case 0x1C0:{
-                setControlSignals({
-                      Signal::ONE,    // Reg2Loc
-                      Signal::ONE,  // ALUSrc
-                      Signal::X,  // MemtoReg
-                      Signal::ZERO,  // RegWrite
-                      Signal::ZERO,  // MemRead
-                      Signal::ONE, // MemWrite
-                      Signal::ZERO,  // MemAccess1
-                      Signal::ZERO, // MemAccess0
-                      Signal::ZERO, // BranchCondition1
-                      Signal::ZERO, // BranchCondition0
-                      Signal::ZERO, // ALUOp1
-                      Signal::ZERO, // ALUOp0
-                      Signal::ZERO  // EnableFlags
-                  });
+                signals.Reg2Loc =  Signal::ONE;      // Reg2Loc
+                signals.ALUSrc =  Signal::ONE;      // ALUSrc
+                signals.MemtoReg =  Signal::X;      // MemtoReg
+                signals.RegWrite =  Signal::ZERO;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ONE;      // MemWrite
+                signals.MemAccess1 =  Signal::ZERO;         // MemAccess1
+                signals.MemAccess0 =  Signal::ZERO;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ZERO;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ZERO;       // EnableFlags
+
+
                 format = Format::D;
                 break;
             }
             // STURH
             case 0x3C0:{
-                setControlSignals({
-                      Signal::ONE,    // Reg2Loc
-                      Signal::ONE,  // ALUSrc
-                      Signal::X,  // MemtoReg
-                      Signal::ZERO,  // RegWrite
-                      Signal::ZERO,  // MemRead
-                      Signal::ONE, // MemWrite
-                      Signal::ZERO,  // MemAccess1
-                      Signal::ONE, // MemAccess0
-                      Signal::ZERO, // BranchCondition1
-                      Signal::ZERO, // BranchCondition0
-                      Signal::ZERO, // ALUOp1
-                      Signal::ZERO, // ALUOp0
-                      Signal::ZERO  // EnableFlags
-                  });
+                signals.Reg2Loc =  Signal::ONE;      // Reg2Loc
+                signals.ALUSrc =  Signal::ONE;      // ALUSrc
+                signals.MemtoReg =  Signal::X;      // MemtoReg
+                signals.RegWrite =  Signal::ZERO;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ONE;      // MemWrite
+                signals.MemAccess1 =  Signal::ZERO;         // MemAccess1
+                signals.MemAccess0 =  Signal::ONE;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ZERO;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ZERO;       // EnableFlags
+
+
                 format = Format::D;
                 break;
             }
             // STURW
             case 0x5C0:{
-                setControlSignals({
-                      Signal::ONE,    // Reg2Loc
-                      Signal::ONE,  // ALUSrc
-                      Signal::X,  // MemtoReg
-                      Signal::ZERO,  // RegWrite
-                      Signal::ZERO,  // MemRead
-                      Signal::ONE, // MemWrite
-                      Signal::ONE,  // MemAccess1
-                      Signal::ZERO, // MemAccess0
-                      Signal::ZERO, // BranchCondition1
-                      Signal::ZERO, // BranchCondition0
-                      Signal::ZERO, // ALUOp1
-                      Signal::ZERO, // ALUOp0
-                      Signal::ZERO  // EnableFlags
-                  });
+                signals.Reg2Loc =  Signal::ONE;      // Reg2Loc
+                signals.ALUSrc =  Signal::ONE;      // ALUSrc
+                signals.MemtoReg =  Signal::X;      // MemtoReg
+                signals.RegWrite =  Signal::ZERO;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ONE;      // MemWrite
+                signals.MemAccess1 =  Signal::ONE;         // MemAccess1
+                signals.MemAccess0 =  Signal::ZERO;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ZERO;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ZERO;       // EnableFlags
+
+
                 format = Format::D;
                 break;
             }
             // B types
             case 0x0A0: {
-                setControlSignals({
-                    Signal::X,    // Reg2Loc
-                    Signal::X,  // ALUSrc
-                    Signal::X,  // MemtoReg
-                    Signal::ZERO,  // RegWrite
-                    Signal::ZERO,  // MemRead
-                    Signal::ZERO, // MemWrite
-                    Signal::X,  // MemAccess1
-                    Signal::X, // MemAccess0
-                    Signal::ONE, // BranchCondition1
-                    Signal::ONE, // BranchCondition0
-                    Signal::X, // ALUOp1
-                    Signal::X, // ALUOp0
-                    Signal::X  // EnableFlags
-                });
+                signals.Reg2Loc =  Signal::X;      // Reg2Loc
+                signals.ALUSrc =  Signal::X;      // ALUSrc
+                signals.MemtoReg =  Signal::X;      // MemtoReg
+                signals.RegWrite =  Signal::ZERO;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::X;         // MemAccess1
+                signals.MemAccess0 =  Signal::X;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ONE;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ONE;      // BranchCondition0
+                signals.ALUOp1 = Signal::X;       // ALUOp1
+                signals.ALUOp0 = Signal::X;      // ALUOp0
+                signals.EnableFlags = Signal::X;       // EnableFlags
+
+
                 format = Format::B;
                 break;
             }
@@ -320,42 +301,42 @@ private:
             // CBZ
             case 0x5A0:
             {
-                setControlSignals({
-                      Signal::ONE,    // Reg2Loc
-                      Signal::ZERO,  // ALUSrc
-                      Signal::X,  // MemtoReg
-                      Signal::ZERO,  // RegWrite
-                      Signal::ZERO,  // MemRead
-                      Signal::ZERO, // MemWrite
-                      Signal::X,  // MemAccess1
-                      Signal::X, // MemAccess0
-                      Signal::ZERO, // BranchCondition1
-                      Signal::ONE, // BranchCondition0
-                      Signal::ZERO, // ALUOp1
-                      Signal::ONE, // ALUOp0
-                      Signal::ONE  // EnableFlags
-              });
+                signals.Reg2Loc =  Signal::ONE;      // Reg2Loc
+                signals.ALUSrc =  Signal::ZERO;      // ALUSrc
+                signals.MemtoReg =  Signal::X;      // MemtoReg
+                signals.RegWrite =  Signal::ZERO;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::X;         // MemAccess1
+                signals.MemAccess0 =  Signal::X;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ONE;      // BranchCondition0
+                signals.ALUOp1 = Signal::ZERO;       // ALUOp1
+                signals.ALUOp0 = Signal::ONE;      // ALUOp0
+                signals.EnableFlags = Signal::ONE;       // EnableFlags
+
+
                 format = Format::CB;
             }
                 break;
                 // CBNZ
             case 0x5A8:
             {
-                setControlSignals({
-                      Signal::ONE,    // Reg2Loc
-                      Signal::ZERO,  // ALUSrc
-                      Signal::X,  // MemtoReg
-                      Signal::ZERO,  // RegWrite
-                      Signal::ZERO,  // MemRead
-                      Signal::ZERO, // MemWrite
-                      Signal::X,  // MemAccess1
-                      Signal::X, // MemAccess0
-                      Signal::ONE, // BranchCondition1
-                      Signal::ZERO, // BranchCondition0
-                      Signal::ZERO, // ALUOp1
-                      Signal::ONE, // ALUOp0
-                      Signal::ONE  // EnableFlags
-              });
+                signals.Reg2Loc =  Signal::ONE;      // Reg2Loc
+                signals.ALUSrc =  Signal::ZERO;      // ALUSrc
+                signals.MemtoReg =  Signal::X;      // MemtoReg
+                signals.RegWrite =  Signal::ZERO;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::X;         // MemAccess1
+                signals.MemAccess0 =  Signal::X;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ONE;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ZERO;       // ALUOp1
+                signals.ALUOp0 = Signal::ONE;      // ALUOp0
+                signals.EnableFlags = Signal::ONE;       // EnableFlags
+
+
                 format = Format::CB;
             }
                 break;
@@ -369,27 +350,27 @@ private:
                 format = Format::IM;
                 break;
             default:
-                setControlSignals({
-                      Signal::ZERO,    // Reg2Loc
-                      Signal::ZERO,  // ALUSrc
-                      Signal::ZERO,  // MemtoReg
-                      Signal::ZERO,  // RegWrite
-                      Signal::ZERO,  // MemRead
-                      Signal::ZERO, // MemWrite
-                      Signal::X,  // MemAccess1
-                      Signal::X, // MemAccess0
-                      Signal::ZERO, // BranchCondition1
-                      Signal::ZERO, // BranchCondition0
-                      Signal::ZERO, // ALUOp1
-                      Signal::ZERO, // ALUOp0
-                      Signal::ZERO  // EnableFlags
-              });
+                signals.Reg2Loc =  Signal::ZERO;      // Reg2Loc
+                signals.ALUSrc =  Signal::ZERO;      // ALUSrc
+                signals.MemtoReg =  Signal::ZERO;      // MemtoReg
+                signals.RegWrite =  Signal::ZERO;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::X;         // MemAccess1
+                signals.MemAccess0 =  Signal::X;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ZERO;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ZERO;       // EnableFlags
+               
                 format = Format::None;
         }
+
     }
 public:
-    void decode(uint16_t* opcode){
-        decode(opcode, nullptr);
+    void decode(uint16_t& opcode){
+        decode(opcode, opcode);
     }
 
     Format getFormat() {

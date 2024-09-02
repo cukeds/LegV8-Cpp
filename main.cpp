@@ -21,13 +21,6 @@ inline void rtrim(std::string &s) {
         return !std::isspace(ch);
     }).base(), s.end());
 }
-std::vector<uint16_t> getDisplayMemory(std::vector<uint8_t> data) {
-    std::vector<uint16_t> displayMemory;
-    for(int i = 0; i < data.size(); i+=2) {
-        displayMemory.push_back((data[i] << 8) | data[i+1]);
-    }
-    return displayMemory;
-}
 
 std::vector<std::string> readAssemblyCode(const std::string& filename) {
     std::unordered_map<std::string, int> labels;
@@ -137,21 +130,21 @@ int main(int argc, char* argv[]) {
     if(!debug) std::cout.rdbuf(nullptr);
 
 
-    Processor processor((display.height * display.width * PIXEL_SIZE) + memory_size, (int) machineCode.size()*4, &display);
+    Processor processor((display.height * display.width * PIXEL_SIZE) + memory_size, (int) machineCode.size()*4, {display_width, display_height});
 
     processor.setup(machineCode);
 
 
     sf::Event event;
-
+    vector<uint8_t> data;
     while (running) {
         // Process the processor logic here
 
         processor.process();
 
-        if(i++ >= 100000 && optimizeRendering){
-            auto data = processor.getDataMemory();
-            display.setPixels(getDisplayMemory(data));
+        if(i++ >= display_width*display_height*4 && optimizeRendering){
+            data = processor.getDataMemory();
+            display.setPixels(data);
             display.render();
             i=0;
             while (display.window.pollEvent(event)) {
@@ -160,11 +153,12 @@ int main(int argc, char* argv[]) {
                 }
             }
         }else if(!optimizeRendering && i >= display_width * 4){
-            auto data = processor.getDataMemory();
-            display.setPixels(getDisplayMemory(data));
+            data = processor.getDataMemory();
+            display.setPixels(data);
             display.render();
             i = 0;
         }
+
 
     }
     return 0;

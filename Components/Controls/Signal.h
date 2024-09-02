@@ -14,21 +14,19 @@ public:
     };
 
 private:
-    std::string name;
     Value value;
 
 public:
-    Signal(std::string  _name, Value _value);
-    [[nodiscard]] std::string getName() const;
-    [[nodiscard]] Value getValue() const;
-    void setValue(Value newValue);
+    Signal() : value(Signal::X){};
+    explicit Signal(Value _value) : value(){};
+    [[nodiscard]] inline Value getValue() const{
+        return value == Signal::ONE ? Signal::ONE : Signal::ZERO;
+    };
 
-    friend std::ostream& operator<<(std::ostream& os, const Signal& signal) {
-        os << signal.name << ": " << signal.value;
-        return os;
-    }
-
-    Signal& operator=(const Signal& signal);
+    inline Signal& operator=(const Signal::Value& sValue){
+        value = sValue;
+        return *this;
+    };
 
 
 };

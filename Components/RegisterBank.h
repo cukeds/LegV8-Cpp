@@ -6,6 +6,7 @@
 #define ARM_REGISTERBANK_H
 #include <cstdint>
 #include <vector>
+#include <iostream>
 
 using std::uint64_t;
 using std::uint8_t;
@@ -18,16 +19,24 @@ private:
 public:
     RegisterBank();
     void setRegister(uint8_t, uint64_t);
-    uint64_t getRegister(uint8_t);
+    [[nodiscard]] inline const uint64_t getRegister(const uint8_t& _register){
+        if(_register > 31) {
+            throw std::invalid_argument("Invalid register number");
+        }
+        if(_register == 31){
+            return 0;
+        }
+        return registers[_register];
+    };
     void print();
     void print(uint8_t);
     ~RegisterBank();
 
-    uint64_t& operator[](uint8_t index) {
+    inline uint64_t& operator[](uint8_t index) {
         return registers[index];
     }
 
-    const uint64_t& operator[](uint8_t index) const {
+    inline const uint64_t& operator[](uint8_t index) const {
         return registers[index];
     }
 };

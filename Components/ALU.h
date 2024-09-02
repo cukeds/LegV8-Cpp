@@ -117,10 +117,7 @@ private:
     }
 
     void print() const {
-        //std::cout << "N: " << N << "\n";
-        //std::cout << "Z: " << Z << "\n";
-        //std::cout << "C: " << C << "\n";
-        //std::cout << "V: " << V << "\n";
+
         //std::cout << std::hex;
         //std::cout << "Result: 0x" << std::setw(16) << std::setfill('0') << result << "\n";
         //std::cout << std::dec;

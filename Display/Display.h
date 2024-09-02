@@ -26,7 +26,7 @@ public:
     sf::RenderWindow window;
     int width;
     int height;
-    void setPixels(const std::vector<sf::Uint16>& _pixels);
+    void setPixels(const std::vector<sf::Uint8>& _pixels);
 private:
     sf::Texture texture;
     sf::Sprite sprite;
