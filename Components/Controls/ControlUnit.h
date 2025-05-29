@@ -31,9 +31,7 @@ private:
             case 0x458:
             case 0x550:
             case 0x658:
-            case 0x650:
-            case 0x69a:
-            case 0x69b: {
+            case 0x650: {
                 signals.Reg2Loc =  Signal::ZERO;      // Reg2Loc
                 signals.ALUSrc =  Signal::ZERO;      // ALUSrc
                 signals.MemtoReg =  Signal::ZERO;      // MemtoReg
@@ -49,6 +47,27 @@ private:
                 signals.EnableFlags = Signal::ZERO;      // EnableFlags
 
 
+
+                format = Format::R;
+            }
+                break;
+
+            case 0x69a:
+            case 0x69b:
+            {
+                signals.Reg2Loc =  Signal::ZERO;      // Reg2Loc
+                signals.ALUSrc =  Signal::ONE;      // ALUSrc
+                signals.MemtoReg =  Signal::ZERO;      // MemtoReg
+                signals.RegWrite =  Signal::ONE;       // RegWrite
+                signals.MemRead =  Signal::ZERO;      // MemRead
+                signals.MemWrite =  Signal::ZERO;      // MemWrite
+                signals.MemAccess1 =  Signal::X;         // MemAccess1
+                signals.MemAccess0 =  Signal::X;         // MemAccess0
+                signals.BranchCondition1 =  Signal::ZERO;      // BranchCondition1
+                signals.BranchCondition0 =  Signal::ZERO;      // BranchCondition0
+                signals.ALUOp1 = Signal::ONE;       // ALUOp1
+                signals.ALUOp0 = Signal::ZERO;      // ALUOp0
+                signals.EnableFlags = Signal::ZERO;      // EnableFlags
 
                 format = Format::R;
             }

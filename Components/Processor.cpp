@@ -143,7 +143,8 @@ void Processor::InstructionDecode() {
 
     if (controlUnit.getControlSignals().Reg2Loc.getValue()) {
         rm_address = rd_address;
-    } else {
+    }
+    else {
         rm_address = (currentInstruction >> 16) & 0x1F; // ONLY R format
     }
 

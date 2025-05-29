@@ -107,10 +107,17 @@ std::vector<std::string> tokenize(const std::string& line) {
     return tokens;
 }
 
-uint32_t getRegisterNumber(const std::string& reg) {
+uint32_t getRegisterNumber(std::string& reg) {
     // Convert register name to register number.
     // Example: "R0" -> 0, "R1" -> 1, etc.
-    if(reg.substr(1)=="ZR") return 31;
+    // get reg to lower case
+    std::string output;
+    std::transform(reg.begin(), reg.end(), std::back_inserter(output), ::tolower);
+    //remove commas
+    output.erase(std::remove(output.begin(), output.end(), ','), output.end());
+    if(output == "xzr") {
+        return 31;
+    }
     return std::stoi(reg.substr(1));
 }
 
@@ -122,12 +129,30 @@ uint32_t encodeRInstruction(std::vector<std::string>& tokens) {
     // Extract fields (opcode, Rn, Rd, etc.) and convert to binary format.
     // Assume register names are parsed elsewhere.
     RInstruction instr;
+    for (auto& i : tokens) {
+        i.erase(std::remove_if(i.begin(), i.end(), [](char c) {
+            return c == '#';
+        }), i.end());
+    }
     instr.opcode = calculateOpcode(tokens[0]);
 
     instr.Rd = getRegisterNumber(tokens[1]);
     instr.Rn = getRegisterNumber(tokens[2]);
-    instr.Rm = getRegisterNumber(tokens[3]);
-    instr.shamt = 0; // Example; adjust as needed.
+    if(instr.opcode == 0x69a || instr.opcode == 0x69b){
+        std::string number = tokens[3];
+        if(number[0] == '0' && number[1] == 'x') {
+            number.erase(0, 2);
+            instr.shamt = std::stoi(number, nullptr, 16);
+        } else if(number[0] == '0' && number[1] == 'b') {
+            number.erase(0, 2);
+            instr.shamt = std::stoi(number, nullptr, 2);
+        } else {
+            instr.shamt = std::stoi(number);
+        }
+    }else{
+        instr.Rm = getRegisterNumber(tokens[3]);
+        instr.shamt = 0;
+    }
 
     uint32_t instruction = (instr.opcode << 21) | (instr.Rm << 16) | (instr.shamt << 10) | (instr.Rn << 5) | instr.Rd;
     //std::cout<<std::hex<<std::setw(8)<<std::setfill('0')<<instruction<<"\n";
@@ -228,6 +253,9 @@ std::vector<uint32_t> compile(const std::vector<std::string>& assemblyLines, con
     std::vector<uint32_t> machineCode;
     for (const auto& line : assemblyLines) {
         auto tokens = tokenize(line);
+        if(tokens[0].starts_with("//")) {
+            continue;
+        }
         // Determine instruction format and call the appropriate encoder.
         if (instructionSet.at(tokens[0]).format == InstructionFormat::R) {
             machineCode.push_back(encodeRInstruction(tokens));

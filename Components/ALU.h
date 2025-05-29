@@ -140,6 +140,10 @@ public:
                 return passthroughb(a, b, enableFlags);
             case 0b1100:
                 return nor(a, b, enableFlags);
+            case 0b1000:
+                return lsl(a, b, enableFlags);
+            case 0b1001:
+                return lsr(a, b, enableFlags);
             default:
                 throw std::invalid_argument("Invalid Execute control signal");
         }

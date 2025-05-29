@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
      }
 
      if(!file){
-        assemblyCode = readAssemblyCode("../assembly.s");
+        assemblyCode = readAssemblyCode("./assembly.s");
         if(assemblyCode.empty()){
          std::cerr << "No assembly.s file provided\n";
          return 1;

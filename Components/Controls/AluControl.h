@@ -86,6 +86,20 @@ public:
                     signals.b0 = Signal::ONE;
                     
                     break;
+                // LSL
+                case 0x69B:
+                    signals.b3 = Signal::ONE;
+                    signals.b2 = Signal::ZERO;
+                    signals.b1 = Signal::ZERO;
+                    signals.b0 = Signal::ZERO;
+                    break;
+                // LSR
+                case 0x69A:
+                    signals.b3 = Signal::ONE;
+                    signals.b2 = Signal::ZERO;
+                    signals.b1 = Signal::ZERO;
+                    signals.b0 = Signal::ONE;
+                    break;
                 default:
                     std::cerr << "Invalid opcode" << "\n";
                     return;

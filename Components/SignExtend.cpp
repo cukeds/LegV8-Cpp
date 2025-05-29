@@ -17,6 +17,7 @@ uint64_t SignExtend::sign_extend(const uint32_t& instruction, const Format& form
     switch(format){
         case Format::None:
         case Format::R:
+            sign_extended = (instruction >> 10) & 0x3F; // shamt
             break;
         case Format::I:
             sign_extended = (instruction >> 10) & 0xFFF;

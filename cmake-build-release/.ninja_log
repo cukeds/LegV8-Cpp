@@ -1,0 +1,10 @@
+# ninja log v6
+24	107	7495027680657245	CMakeFiles/arm.dir/Components/Controls/Signal.cpp.obj	dea0f6e0514ab3be
+11	466	7506523344019021	CMakeFiles/arm.dir/Components/SignExtend.cpp.obj	d0a7d245f32552ab
+16	884	7495027680587244	CMakeFiles/arm.dir/Components/ProgramCounter.cpp.obj	9405904465eb748a
+5	2180	7506523343959314	CMakeFiles/arm.dir/main.cpp.obj	9f346a4666f16100
+21	951	7495027680627244	CMakeFiles/arm.dir/Components/RegisterBank.cpp.obj	7d4839eb4ae55f8b
+108	1766	7495027681497240	CMakeFiles/arm.dir/Display/Display.cpp.obj	26c33467094559a6
+8	1067	7506523343999043	CMakeFiles/arm.dir/Components/Processor.cpp.obj	40532ed03df78ff8
+2180	2541	7506523365709015	arm.exe	2022e9b09d14ee02
+2	243	7701963489446399	build.ninja	c2c0ceebce492d83
