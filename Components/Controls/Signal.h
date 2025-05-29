@@ -18,7 +18,7 @@ private:
 
 public:
     Signal() : value(Signal::X){};
-    explicit Signal(Value _value) : value(){};
+    explicit Signal(Value _value) : value(_value){};
     [[nodiscard]] inline Value getValue() const{
         return value == Signal::ONE ? Signal::ONE : Signal::ZERO;
     };

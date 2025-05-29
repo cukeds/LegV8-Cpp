@@ -8,3 +8,11 @@
 8	1067	7506523343999043	CMakeFiles/arm.dir/Components/Processor.cpp.obj	40532ed03df78ff8
 2180	2541	7506523365709015	arm.exe	2022e9b09d14ee02
 2	243	7701963489446399	build.ninja	c2c0ceebce492d83
+38	212	7701964241317428	CMakeFiles/arm.dir/Components/Controls/Signal.cpp.obj	a5c4638338b13169
+41	1025	7701964241357467	CMakeFiles/arm.dir/Components/SignExtend.cpp.obj	188337e30a4344c8
+29	1254	7701964241237565	CMakeFiles/arm.dir/Components/ProgramCounter.cpp.obj	cbb49944cc089204
+35	1376	7701964241297432	CMakeFiles/arm.dir/Components/RegisterBank.cpp.obj	4c0d20dbeafb1a8a
+213	1887	7701964243072750	CMakeFiles/arm.dir/Display/Display.cpp.obj	cef9c8b59b2c8a9f
+32	2196	7701964241267431	CMakeFiles/arm.dir/Components/Processor.cpp.obj	901111eeaa5d2bab
+26	3393	7701964241207436	CMakeFiles/arm.dir/main.cpp.obj	da1c55028861bae0
+3393	3900	7701964274877704	arm.exe	9bbae4cbdd1dd994
